@@ -1,14 +1,14 @@
+```groovy
 pipeline {
     agent any
 
-    environment {
-        IMAGE_PREFIX = 'datavault'
-        REGISTRY = 'index.docker.io'
-        SERVER_IMAGE = "${REGISTRY}/${IMAGE_PREFIX}-server:latest"
-        CLIENT_IMAGE = "${REGISTRY}/${IMAGE_PREFIX}-client:latest"
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds()
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -18,7 +18,7 @@ pipeline {
         stage('Build Server') {
             steps {
                 dir('server') {
-                    sh './mvnw clean package -DskipTests'
+                    bat 'mvn clean package -DskipTests'
                 }
             }
         }
@@ -26,8 +26,8 @@ pipeline {
         stage('Build Client') {
             steps {
                 dir('client') {
-                    sh 'npm ci'
-                    sh 'npm run build'
+                    bat 'npm install'
+                    bat 'npm run build'
                 }
             }
         }
@@ -35,25 +35,34 @@ pipeline {
         stage('Docker Build Server') {
             steps {
                 script {
-                    docker.build("${SERVER_IMAGE}", './server')
+                    def rc = bat(
+                        script: 'docker info',
+                        returnStatus: true
+                    )
+
+                    if (rc == 0) {
+                        bat 'docker build -t datavault-server:latest .'
+                    } else {
+                        echo 'Docker not available → skipping'
+                    }
                 }
             }
         }
 
         stage('Docker Build Client') {
             steps {
-                script {
-                    docker.build("${CLIENT_IMAGE}", './client')
-                }
-            }
-        }
+                dir('client') {
+                    script {
+                        def rc = bat(
+                            script: 'docker info',
+                            returnStatus: true
+                        )
 
-        stage('Push Images') {
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io', 'docker-hub-credentials') {
-                        docker.image("${SERVER_IMAGE}").push()
-                        docker.image("${CLIENT_IMAGE}").push()
+                        if (rc == 0) {
+                            bat 'docker build -t datavault-client:latest .'
+                        } else {
+                            echo 'Docker not available → skipping'
+                        }
                     }
                 }
             }
@@ -61,8 +70,18 @@ pipeline {
     }
 
     post {
+
+        always {
+            echo 'Pipeline completed'
+        }
+
+        success {
+            echo 'Build successful'
+        }
+
         failure {
             echo 'Build failed'
         }
     }
 }
+```

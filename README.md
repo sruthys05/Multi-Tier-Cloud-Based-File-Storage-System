@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # DataVault
 
 A full‑stack cloud storage web application with secure sharing, file history, and role‑based access.
@@ -21,7 +20,6 @@ A full‑stack cloud storage web application with secure sharing, file history, 
 - Role support: ADMIN, USER, VIEWER
 - Email verification flow (token + resend)
 - Theme support (Settings page)
-
 
 ## Getting started
 
@@ -70,7 +68,6 @@ docker run -d -p 3000:3000 --name datavault-client datavault-client
 ## Jenkins
 
 A Jenkinsfile is included to:
-
 - Build server jar and client bundle
 - Build Docker images
 - Push to Docker Hub (requires credentials ID `docker-hub-credentials`)
@@ -105,7 +102,3 @@ The logged‑in user’s role comes from the `users.role` column and is enforced
 - Duplicate uploads are blocked using SHA‑256 file hashing.
 - Shareable links are created with expiry and can be revoked.
 - File trash supports restore and permanent delete.
-=======
-# Multi-Tier-Cloud-Based-File-Storage-System
- Developed a full-stack File Storage System with React.js frontend and Spring Boot backend. Implemented secure file handling, REST APIs, database integration, and prepared the application for DevOps deployment using Docker, Jenkins CI/CD, and AWS EC2.  
->>>>>>> 946ec2fdbbd8e8a1c65661859122464bb4cfcadb
