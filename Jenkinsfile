@@ -1,87 +1,31 @@
-```groovy
+
 pipeline {
     agent any
 
-    options {
-        timeout(time: 30, unit: 'MINUTES')
-        disableConcurrentBuilds()
-    }
-
     stages {
 
-        stage('Checkout') {
-            steps {
-                checkout scm
+        stage('Clone'){
+            steps{
+                git 'https://github.com/sruthys05/Multi-Tier-Cloud-Based-File-Storage-System.git'
             }
         }
 
-        stage('Build Server') {
-            steps {
-                dir('server') {
-                    bat 'mvn clean package -DskipTests'
-                }
+        stage('Build'){
+            steps{
+                sh 'mvn clean package'
             }
         }
 
-        stage('Build Client') {
-            steps {
-                dir('client') {
-                    bat 'npm install'
-                    bat 'npm run build'
-                }
+        stage('Docker Build'){
+            steps{
+                sh 'docker build -t cloud-storage .'
             }
         }
 
-        stage('Docker Build Server') {
-            steps {
-                script {
-                    def rc = bat(
-                        script: 'docker info',
-                        returnStatus: true
-                    )
-
-                    if (rc == 0) {
-                        bat 'docker build -t datavault-server:latest .'
-                    } else {
-                        echo 'Docker not available → skipping'
-                    }
-                }
+        stage('Run'){
+            steps{
+                sh 'docker run -d -p 3000:3000 cloud-storage'
             }
-        }
-
-        stage('Docker Build Client') {
-            steps {
-                dir('client') {
-                    script {
-                        def rc = bat(
-                            script: 'docker info',
-                            returnStatus: true
-                        )
-
-                        if (rc == 0) {
-                            bat 'docker build -t datavault-client:latest .'
-                        } else {
-                            echo 'Docker not available → skipping'
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-
-        always {
-            echo 'Pipeline completed'
-        }
-
-        success {
-            echo 'Build successful'
-        }
-
-        failure {
-            echo 'Build failed'
         }
     }
 }
-```
