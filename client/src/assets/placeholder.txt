@@ -1,0 +1,2 @@
+Place assets like images, icons, and other static files here.
+The dv-logo.svg is stored in the public/ folder.
