@@ -1,9 +1,9 @@
 # React
-frontend/node_modules/
-frontend/build/
+client/node_modules/
+client/build/
 
 # Backend
-backend/target/
+server/target/
 
 # IDE
 .vscode/
