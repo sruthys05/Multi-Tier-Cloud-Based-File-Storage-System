@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 
 const ThemeContext = createContext(null);
@@ -35,26 +29,23 @@ export const ThemeProvider = ({ children }) => {
 
   // Sync theme from logged-in user
   useEffect(() => {
-    if (
-      user?.theme &&
-      (user.theme === "light" || user.theme === "dark") &&
-      user.theme !== theme
-    ) {
-      setTheme(user.theme);
-    }
-  }, [user?.theme, theme]);
-
-  const toggleTheme = useCallback(() => {
-    setTheme((prevTheme) => {
-      const newTheme = prevTheme === "light" ? "dark" : "light";
-
-      if (user) {
-        updateTheme(newTheme).catch(() => {});
+    if (user && user.theme) {
+      if (user.theme === "light" || user.theme === "dark") {
+        if (user.theme !== theme) {
+          setTheme(user.theme);
+        }
       }
+    }
+  }, [user, theme]);
 
-      return newTheme;
-    });
-  }, [user, updateTheme]);
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+
+    if (user) {
+      updateTheme(newTheme);
+    }
+  };
 
   return (
     <ThemeContext.Provider

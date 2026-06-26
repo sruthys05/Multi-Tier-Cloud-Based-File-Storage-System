@@ -110,14 +110,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateTheme = async (theme) => {
+  const updateTheme = useCallback(async (theme) => {
     try {
       await authAPI.updateTheme({ theme });
       setUser((prev) => ({ ...prev, theme }));
     } catch (err) {
       console.error('Theme update failed:', err);
     }
-  };
+  }, []);
 
   const value = {
     user,
