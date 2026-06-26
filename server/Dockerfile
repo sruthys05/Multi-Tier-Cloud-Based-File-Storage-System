@@ -1,9 +1,9 @@
-FROM eclipse-temurin:17-jdk-jammy
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
-COPY target/*.jar app.jar
+COPY target/datavault-server-*.jar app.jar
 
 EXPOSE 8081
 
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
